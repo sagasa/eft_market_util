@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import type {} from "@mui/x-data-grid/themeAugmentation";
 import { CssBaseline } from "@mui/material";
 
 const darkTheme = createTheme({
@@ -13,10 +14,27 @@ const darkTheme = createTheme({
     fontWeightLight:100
   },
   components: {
-    MuiCssBaseline: {
+    MuiDataGrid: {
       styleOverrides: {
-        body: {
-          backgroundColor: 'transparent',
+        root: {
+          border: 'none',
+        },
+        cell: {
+          color: '#fff',
+        },
+        columnHeaders: {
+          backgroundColor: '#333',
+        },
+        row: {
+          '&:nth-of-type(even)': {
+            backgroundColor: '#444',
+          },
+          '&:hover': {
+            backgroundColor: '#555',
+          },
+        },
+        footerContainer: {
+          backgroundColor: '#333',
         },
       },
     },

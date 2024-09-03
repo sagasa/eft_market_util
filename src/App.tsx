@@ -7,12 +7,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
+import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 
 import logo from './logo.svg';
 import './App.css';
 
 import { request, gql } from 'graphql-request';
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 
 const query = gql`
 {
@@ -180,55 +181,52 @@ const ItemsMarketPriceDiffPercentage = items.then((data) => {
   });
 });
 
-const StyledTableCell = styled(TableCell)({
-  padding: '4px', // Set top and bottom padding to 4px
-});
-
 console.log('Hello World!');
 // Make the GraphQL request
 
 function ItemMarketPriceDiffList(items: ItemEntry[]) {
+  
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: 'Item',
+      width: 200,
+      renderCell: (params) => (
+        <Box display="flex" alignItems="center">
+          <img
+            src={params.row.icon}
+            alt={params.row.name}
+            loading="lazy"
+            style={{ width: '24px', height: '24px', marginRight: '8px' }}
+          />
+          {params.value}
+        </Box>
+      ),
+    },
+    { field: 'marketPriceMin', headerName: 'Market Price Min', width: 150, type: 'number' },
+    { field: 'marketPriceMax', headerName: 'Market Price Max', width: 150, type: 'number' },
+    { field: 'marketPriceDiff', headerName: 'Market Price Diff', width: 150, type: 'number' },
+    {
+      field: 'marketPriceDiffPercentage',
+      headerName: 'Market Price Diff Percentage (%)',
+      width: 200,
+      valueFormatter: (params:number) => `${params.toFixed(2)}%`,
+      type: 'number',
+    },
+  ];
+
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Item</TableCell>
-            <TableCell align="right">Market Price Min</TableCell>
-            <TableCell align="right">Market Price Max</TableCell>
-            <TableCell align="right">Market Price Diff</TableCell>
-            <TableCell align="right">Market Price Diff Percentage&nbsp;(%)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items.map((item) => (
-            <TableRow
-              key={item.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <StyledTableCell component="th" scope="row"
-                sx={{
-                  display:'flex',
-                  alignItems:'center'
-                }}
-              >
-                <img
-                  src={item.icon}
-                  alt={item.name}
-                  loading="lazy"
-                  style={{ width: '48px', height: '48px', marginRight: '8px' }}
-                />
-                {item.name}
-              </StyledTableCell>
-              <StyledTableCell align="right">{item.marketPriceMin}</StyledTableCell>
-              <StyledTableCell align="right">{item.marketPriceMax}</StyledTableCell>
-              <StyledTableCell align="right">{item.marketPriceDiff}</StyledTableCell>
-              <StyledTableCell align="right">{item.marketPriceDiffPercentage.toFixed(2)}</StyledTableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <DataGrid
+        rows={items}
+        columns={columns}
+        disableColumnSelector
+        disableRowSelectionOnClick
+        autoHeight
+
+        slots={{
+          toolbar: GridToolbar,
+        }}
+      />
   )
 }
 
@@ -242,23 +240,7 @@ function App() {
 
   return (
     <div className="App">
-
       {ItemMarketPriceDiffList(items)}
-
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn
-        </a>
-      </header>
     </div>
   );
 }
